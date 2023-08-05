@@ -1,17 +1,11 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 import mysql.connector
-import random
-import sqlparse as sp
 import datetime
-import os
 from time import sleep
 
+from view_ticket import VIEW_TICKET
 # os.system('clear')
 
-myconn = mysql.connector.connect(host="localhost", user="root", passwd="Lakshya@123", database="railway")
-mycursor = myconn.cursor()
+from db_utils import mycursor, close_connection
 
 G_PNR = 0
 # print(myconn)
@@ -31,35 +25,6 @@ def menu():
     print('#4. Cancel a Ticket')
     print('#5. Print a Ticket')
     print('#6. Exit')
-
-
-def VIEW_TICKET(G_PNR):
-    PNR = str(input('\nENTER PNR NO:'))
-
-    sql_query = "SELECT ticket_master.pnr,train_master.TRAIN_no,train_master.TRAIN_NAME,ticket_master.date_journey,train_master.DEPARTURE_STATION,train_master.SOURCE_STATION ,ticket_master.ticket_status FROM ticket_master INNER JOIN train_master ON ticket_master.TRAIN_NO=train_master.train_no where pnr=" + PNR
-
-    mycursor.execute(sql_query)
-
-    myresult = mycursor.fetchall()
-    print('-------------------------------------------------------------------------------------------------')
-    print('PNR         TRAIN_NO       TRAIN_NAME     DATE JOURNEY       DEPARTURE     ARRIVAL       STATUS')
-    print('-------------------------------------------------------------------------------------------------')
-    for x in myresult:
-        print(*x, sep='        ')
-    print('-------------------------------------------------------------------------------------------------\n')
-
-    sql_query = "SELECT pass_no,passenger_name,age,gender FROM ticket_details where pnr=" + PNR
-    mycursor.execute(sql_query)
-    myresult = mycursor.fetchall()
-
-    print('PASSENGER No.     NAME     AGE     GENDER')
-    for x in myresult:
-        print(*x, sep='               ')
-    print('-------------------------------------------------------------------------------------------------\n')
-    G_PNR = PNR
-    sleep(2)
-
-    return G_PNR
 
 
 def TRAIN_DETAILS():
@@ -216,28 +181,33 @@ def cancelltaion():
 
 def master():
     menu()
-    a = int(input('\nEnter your choice(Only numbers from the choice above): '))
-    if a == 1:
+    inp = input('\nEnter your choice(Only numbers from the choice above): ')
+    a = str(inp)
+    if a == '1':
         reservation()
         master()
-    elif a == 2:
+    elif a == '2':
         VIEW_TICKET(G_PNR)
         master()
-    elif a == 3:
+    elif a == '3':
         TRAIN_DETAILS()
         master()
-    elif a == 4:
+    elif a == '4':
         cancelltaion()
-    elif a == 5:
+    elif a == '5':
         pass
         # PRINT_TICKET()
-    elif a == 6:
+    elif a == '6':
         print('Thank You')
-        myconn.close()
-        exit()
+        close_connection()
     else:
         print('Invalid Choice')
         master()
 
 
 master()
+
+"""
+if __name__ == "__main__":
+    master()
+"""
